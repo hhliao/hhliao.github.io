@@ -6,8 +6,8 @@
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 
-title: my first blog!
-description: This is where the description of your site will go. You should change it by editing the _config.yml file. It can be as long as you like! Happy blogging... ❤
+title: 记录美好的生活!
+description: 宝剑锋从磨砺出，梅花香自苦寒来 ❤
 github_username: hhliao
 
 # Email and twitter are optional:
