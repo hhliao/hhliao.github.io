@@ -14,7 +14,7 @@ Some of the most popular frameworks for model parallelism are
 - [Understanding Attention Mechanism in Transformer Neural Networks](https://learnopencv.com/attention-mechanism-in-transformer-neural-networks/)
 - [The Future of Image Recognition is Here: PyTorch Vision Transformers](https://learnopencv.com/the-future-of-image-recognition-is-here-pytorch-vision-transformer/)
 
-Some more about inference see [NVIDIA Spring GTC 2023 Day 1: Welcome to the future!] (https://learnopencv.com/nvidia-spring-gtc-2023-day-1-highlights-welcome-to-the-future/), part **Efficient Inference of Transformer Models**.
+Some more about inference see [NVIDIA Spring GTC 2023 Day 1: Welcome to the future!](https://learnopencv.com/nvidia-spring-gtc-2023-day-1-highlights-welcome-to-the-future/), part **Efficient Inference of Transformer Models**.
 
 ### Some advice form researcher (Amulya, Neena and Tomas) from Nividia:
 
