@@ -31,7 +31,7 @@ cheese => ___ /* prompt */
 few-shot learning 的原理完全一致，就是把example多写几个，一行一个即可。事实证明，用few-shot，100个example就能达到非常好的性能。
 
 相比于fine-tuning(如下图)，每次输入一个新的example就需要对整个大模型进行梯度更新。这样做一方面需要保存大模型参数的同时，还需要保存对应的梯度，以及训练状态，模型越大需要的硬件资源就越多，所需的训练数据量也就越大；另一方面，由于当前大模型已经是训练好了的，即它在其训练数据所在的领域已经具备了很好的性能，在新的任务上做fine-tuning的时候，会破坏其在原来领域已经具备的能力，即模型会出现**遗忘**。
-![4cb68baf50514babbc237931e2b401f3.png](/_resources/4cb68baf50514babbc237931e2b401f3.png)
+![4cb68baf50514babbc237931e2b401f3.png](/images/4cb68baf50514babbc237931e2b401f3.png)
 
 对于大语言模型来说，其本身在训练时已经学习到了大量的文本语料和任务，可以直接使用Prompt来完成新的任务。
 
@@ -48,7 +48,7 @@ few-shot learning 的原理完全一致，就是把example多写几个，一行�
 - 硬提示的选择对于预训练模型的影响非常大。
 
 如下图的完形填空测试，对于同一个任务，不同的**硬提示**对任务的准确率的变动很大，最好的top1准确率可以到51.08%，而最差的只有19.78%，第一行为训练时的表述方式。
-![be7a2060f225fa13f39e230a419eee2c.png](/_resources/be7a2060f225fa13f39e230a419eee2c.png)
+![be7a2060f225fa13f39e230a419eee2c.png](/images/be7a2060f225fa13f39e230a419eee2c.png)
 
 由此可见，人类认为的最好的Prompt，并不是大语言模型认为的最好的Prompt，人类和大语言模型之间存在着某种未知的鸿沟。于是，为了弥补这个鸿沟，需要不断尝试人工设计的**硬提示**，并记录和总结大语言模型的输出结果，不断在试错中积累经验。
 
@@ -64,18 +64,18 @@ few-shot learning 的原理完全一致，就是把example多写几个，一行�
 谷歌的研究人员首次在论文《[Parameter-Efficient Transfer Learning for NLP](https://arxiv.org/pdf/1902.00751.pdf)》提出了针对BERT的PEFT微调方式，拉开了PEFT研究的序幕。他们指出，在面对特定的下游任务时，如果进行Full-fintuning（即预训练模型中的所有参数都进行微调），太过低效；而如果采用固定预训练模型的某些层，只微调接近下游任务的那几层参数，又难以达到较好的效果。
 
 于是他们设计了如下图所示的Adapter结构，将其嵌入Transformer的结构里面，在训练时，固定住原来预训练模型的参数不变，只对新增的Adapter结构进行微调。同时为了保证训练的高效性（也就是尽可能少的引入更多参数），他们将Adapter设计为这样的结构：首先是一个down-project层将高维度特征映射到低维特征，然后过一个非线形层之后，再用一个up-project结构将低维特征映射回原来的高维特征；同时也设计了skip-connection结构，确保了在最差的情况下能够退化为identity。
-![acf6970ad999910b4602c9cc98ac7892.png](/_resources/acf6970ad999910b4602c9cc98ac7892.png)
+![acf6970ad999910b4602c9cc98ac7892.png](/images/acf6970ad999910b4602c9cc98ac7892.png)
 
 从实验结果来看，该方法能够在只额外对增加的3.6%参数规模（相比原来预训练模型的参数量）的情况下取得和Full-finetuning接近的效果。
 
 **Prefix Tuning**
 Prefix Tuning方法由斯坦福的研究人员提出，与Full-finetuning更新所有参数的方式不同，该方法是在输入的token之前构造一段任务相关的virtual tokens作为Prefix，然后训练的时候只更新Prefix部分的参数，而模型中的其他部分参数固定。该方法其实和构造Prompt类似，只是Prompt是人为构造的“显式”的提示,并且无法更新参数，而Prefix则是可以学习的“隐式”的提示。这个方法简单来说就是在输入的prompt之前加一个学习到的前缀。
 Prefix Tuning与全量fine-tuning的差异如下图所示，全量fine-tuning是对模型的每个参数都进行了更新，而Prefix Tuning只是在输入的Input tokens前面加上一些学习到的任务特定的virtual tokens。实验结果也说明了Prefix Tuning的方式可以取得不错的效果。但是，不同的任务前面需要添加的前缀virtual tokens的大小是不同的。
-![30c1b8d7f03d1287758e86e91af1c8ca.png](/_resources/30c1b8d7f03d1287758e86e91af1c8ca.png)
+![30c1b8d7f03d1287758e86e91af1c8ca.png](/images/30c1b8d7f03d1287758e86e91af1c8ca.png)
 
 **Prompt Tuning**
 该方法可以看作是Prefix Tuning的简化版本，只在输入层加入prompt tokens，并不需要加入MLP进行调整来解决难训练的问题，主要在T5预训练模型上做实验。似乎只要预训练模型足够强大，其他的一切都不是问题。作者也做实验说明随着预训练模型参数量的增加，Prompt Tuning的方法会逼近Fine-tune的结果。
-![58ca9d815a54786ac246b71fca4c265e.png](/_resources/58ca9d815a54786ac246b71fca4c265e.png)
+![58ca9d815a54786ac246b71fca4c265e.png](/images/58ca9d815a54786ac246b71fca4c265e.png)
 作者在论文中展示的结果是：随着预训练模型参数的增加，一切的问题都不是问题，最简单的设置也能达到极好的效果。
 - Prompt长度影响：模型参数达到一定量级时，Prompt长度为1也能达到不错的效果，Prompt长度为20就能达到极好效果。
 - Prompt初始化方式影响：Random Uniform方式明显弱于其他两种，但是当模型参数达到一定量级，这种差异也不复存在。
@@ -84,14 +84,14 @@ Prefix Tuning与全量fine-tuning的差异如下图所示，全量fine-tuning是
 
 **P-Tuning V2**
 因为P-Tuning V2与Prefix Tuning的思路相似，所以先讲P-Tuning V2。P-Tuning V2的基本思想如下图所示，它与Prefix Tuning的区别在于，Prefix Tuning之时在输入的时候加上任务特定的virtual tokens，而P-Tuning V2是在模型的每一层的输入处都加上一个任务特定的virtual tokens。
-![682569f2f9f4502a83c742e3e0a0317b.png](/_resources/682569f2f9f4502a83c742e3e0a0317b.png)
+![682569f2f9f4502a83c742e3e0a0317b.png](/images/682569f2f9f4502a83c742e3e0a0317b.png)
 
 **P-Tuning**
 P-Tuning的思路与Prefix Tuning的类似，但两者的区别在于：
 - Prefix Tuning是将额外的embedding加在开头，看起来更像是模仿Instruction指令；而P-Tuning的位置则不固定，在前缀和中间位置都有可能。
 - Prefix Tuning通过在每个Attention层都加入Prefix Embedding来增加额外的参数，通过MLP来初始化；而P-Tuning只是在输入的时候加入Embedding，并通过LSTM+MLP来初始化。
 
-![1a7247fc9c722ca6ababa15c60163c44.png](/_resources/1a7247fc9c722ca6ababa15c60163c44.png)
+![1a7247fc9c722ca6ababa15c60163c44.png](/images/1a7247fc9c722ca6ababa15c60163c44.png)
 
 **LoRA**
 微软和CMU的研究者指出，现有的一些PEFT的方法还存在这样一些问题：
@@ -100,8 +100,8 @@ P-Tuning的思路与Prefix Tuning的类似，但两者的区别在于：
 - 往往效率和质量不可兼得，效果略差于full-finetuning。
 
 有研究者发现：语言模型虽然参数众多，但是起到关键作用的还是其中低秩的本质维度（low instrisic dimension）。受到该观点的启发，提出了Low-Rank Adaption(LoRA)，设计了如下所示的结构，在涉及到矩阵相乘的模块，引入A、B这样两个低秩矩阵模块去模拟Full-finetune的过程，相当于只对语言模型中起关键作用的低秩本质维度进行更新。
-![7fd3358de8cce0cdf14d5f0d42df4e14.png](/_resources/7fd3358de8cce0cdf14d5f0d42df4e14.png)
-![e727b1ef88428f4a9d58cfe709fc12f8.png](/_resources/e727b1ef88428f4a9d58cfe709fc12f8.png)
+![7fd3358de8cce0cdf14d5f0d42df4e14.png](/images/7fd3358de8cce0cdf14d5f0d42df4e14.png)
+![e727b1ef88428f4a9d58cfe709fc12f8.png](/images/e727b1ef88428f4a9d58cfe709fc12f8.png)
 
 这么做就能完美解决以上存在的3个问题：
 - 相比于原始的Adapter方法“额外”增加网络深度，必然会带来推理过程额外的延迟，该方法可以在推理阶段直接用训练好的A、B矩阵参数与原预训练模型的参数相加去替换原有预训练模型的参数，这样的话推理过程就相当于和Full-finetune一样，没有额外的计算量，从而不会带来性能的损失。
@@ -114,11 +114,11 @@ AdaLoRA是对LoRA的一种改进，它根据重要性评分动态分配参数预
 - 以奇异值分解的形式对增量更新进行参数化，并根据重要性指标裁剪掉不重要的奇异值，同时保留奇异向量。由于对一个大矩阵进行精确SVD分解的计算消耗非常大，这种方法通过减少它们的参数预算来加速计算，同时，保留未来恢复的可能性并稳定训练。
 
 它和LoRA的差异如下图，上面的公式是AdaLoRA的，下面的公式是LoRA的。
-![b5057709152381535a8645f0858b427b.png](/_resources/b5057709152381535a8645f0858b427b.png)
+![b5057709152381535a8645f0858b427b.png](/images/b5057709152381535a8645f0858b427b.png)
 
 **QLoRA**
 [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/pdf/2305.14314.pdf)是一种高效的、可减少内存/显存使用量的微调方法，它能够在单个 48GB GPU 上微调 65B 参数量的大语言模型，同时可保留完整的 16 位微调任务性能。 QLORA 是一种量化的LoRA，它通过将LoRA的梯度量化到4比特来进一步降低内存/显存的使用量，而不影响LoRA的性能，其主要思想如下图所示。
-![dd79075bbd83e2ed4bdf6e5c34c23377.png](/_resources/dd79075bbd83e2ed4bdf6e5c34c23377.png)
+![dd79075bbd83e2ed4bdf6e5c34c23377.png](/images/dd79075bbd83e2ed4bdf6e5c34c23377.png)
 
 ### 2.3 总结
 huggingface开源了一个[peft](https://github.com/huggingface/peft)库，该库由Python语言实现，包括了当前最流行的几种PEFT策略算法。
